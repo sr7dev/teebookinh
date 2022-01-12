@@ -3,7 +3,7 @@ name: backend-deployment
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deployment:
@@ -22,7 +22,7 @@ jobs:
         KEY: ${{ secrets.SSHKEY }}
       with:
         source: "."
-        target: "/var/www/laravel-ksr-boston_abundance"
+        target: "/var/www/backteehive"
 
     - name: Executing remote  command
       uses: appleboy/ssh-action@master
@@ -31,4 +31,4 @@ jobs:
         USERNAME: ${{ secrets.USERNAME }}
         PORT: ${{ secrets.PORT }}
         KEY: ${{ secrets.SSHKEY }}
-        script: sh /var/www/laravel-ksr-boston_abundance/deploy.sh;
+        script: sh /var/www/backteehive/deploy.sh;
