@@ -12,7 +12,7 @@ class Controller extends BaseController
     /**
      * @OA\Info(
      *      version="1.0.0",
-     *      title="Laravel API Documentation",
+     *      title="Teehive API Documentation",
      *      description="L5 Swagger OpenApi description",
      * )
      *
