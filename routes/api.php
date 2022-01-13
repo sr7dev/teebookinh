@@ -26,7 +26,8 @@ Route::group([
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/user-profile', [AuthController::class, 'userProfile']);
     Route::any('un-authenticated', [AuthController::class, 'no_authenticated'])->name('unauthenticated');
-
+    Route::get('google', [SocialiteAuthController::class, 'googleRedirect'])->name('auth/google');
+    Route::get('/auth/google-callback', [SocialiteAuthController::class, 'loginWithGoogle']);
 });
 
 // Authenticated admin routes
