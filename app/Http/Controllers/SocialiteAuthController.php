@@ -15,11 +15,11 @@ class SocialiteAuthController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function loginWithGoogle()
+    public function loginWithGoogle(Request $request)
     {
         try {
 
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')->stateless()->userFromToken($request->token);
             $user = User::where('google_id', $googleUser->id)->first();
 
             if($user){
@@ -36,7 +36,7 @@ class SocialiteAuthController extends Controller
                 ]);
 
                 Auth::login($createUser);
-                return $this->createNewToken($token);
+                return response()->json($this->createNewToken($createUser, $request->device_name));
             }
 
         } catch (Exception $exception) {
