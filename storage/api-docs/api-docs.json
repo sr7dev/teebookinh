@@ -1,13 +1,13 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Laravel API Documentation",
+        "title": "Teehive API Documentation",
         "description": "L5 Swagger OpenApi description",
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "http://localhost:8000/api/",
+            "url": "http://localhost:8000/api",
             "description": "API Server"
         }
     ],
@@ -697,6 +697,9 @@
                     },
                     "403": {
                         "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "validation errors"
                     }
                 }
             }
