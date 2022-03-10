@@ -15,11 +15,11 @@ class EventController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/events",
-     *     tags={"Event"},
+     *     path="/courses",
+     *     tags={"Course"},
      *     security={{"bearer":{}}},
-     *     summary="Get list of events",
-     *     @OA\Response(response="200", description="Get list of events")
+     *     summary="Get list of courses",
+     *     @OA\Response(response="200", description="Get list of courses")
      * )
      */
     public function index(Request $request)
@@ -35,34 +35,68 @@ class EventController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/courses/{course_id}",
+     *     tags={"Course"},
+     *     security={{"bearer":{}}},
+     *     summary="Get person_id of current user by course_id",
+     * 
+     *  @OA\Parameter(
+     *      name="course_id",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     * 
+     * @OA\Response(
+     *      response=201,
+     *      description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *   @OA\Response(
+     *      response=403,
+     *      description="Forbidden"
+     *   )
+     *)
+     */
+    public function getPersonID(Request $request, $course_id)
+    {
+        $event = Event::where('user_id', $request->user()->id)
+                    ->where('course_id', $course_id)
+                    ->get();
+        if ($event->count() < 1) {
+            return response(['error' => true, 'error-msg' => 'Not found'], 404);
+        }
+        return response()->json([
+            'person_id' => $event->first()->person_id,
+        ]);
+    }
+
+    /**
      * @OA\Post(
-     **  path="/events",
+     **  path="/courses",
+     *   tags={"Course"},
      *   security={{"bearer":{}}},
-     *   tags={"Event"},
-     *   summary="Create new Event",
+     *   summary="Create a new",
      *
      *   @OA\RequestBody(
      *      required=true,
      *      @OA\JsonContent(
-     *         required={"name","description","date"},
-     *         @OA\Property(property="name", type="string", format="string", example="event-1"),
-     *         @OA\Property(property="description", type="string", format="string", example="description-1"),
-     *         @OA\Property(property="date", type="string", format="date", example="2021-04-30"),
-     *         @OA\Property(property="number_of_attendees", type="integer", format="string"),
-     *         @OA\Property(property="unit_of_attendees", type="string", format="string"),
-     *         @OA\Property(property="dimension", type="string", format="string"),
-     *         @OA\Property(property="type", type="string", format="string"),
-     *         @OA\Property(property="whether_virtual", type="boolean", format="boolean"),
-     *         @OA\Property(property="languages", type="string", format="string"),
-     *         @OA\Property(property="is_internal", type="string", format="string"),
-     *         @OA\Property(property="any_partners", type="string", format="string"),
-     *         @OA\Property(property="component_covid19", type="string", format="string"),
-     *         @OA\Property(property="component_addressing", type="string", format="string"),
-     *         @OA\Property(property="leadership_level", type="string", format="string"),
-     *         @OA\Property(property="resources", type="string", format="string"),
-     *         @OA\Property(property="optional_1", type="string", format="string"),
-     *         @OA\Property(property="optional_2", type="string", format="string"),
-     *         @OA\Property(property="optional_3", type="string", format="string"),
+     *         required={"person_id","course_id"},
+     *         @OA\Property(property="person_id", type="string", format="string", example="person-1"),
+     *         @OA\Property(property="course_id", type="string", format="string", example="course-1"),
      *      ),
      *   ),
      *
@@ -90,9 +124,8 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'date' => 'required',
+            'person_id' => 'required|string',
+            'course_id' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -111,42 +144,24 @@ class EventController extends Controller
 
     /**
      * @OA\Put(
-     **  path="/events/{id}",
+     **  path="/courses/{course_id}",
+     *   tags={"Course"},
      *   security={{"bearer":{}}},
-     *   tags={"Event"},
-     *   summary="Update a specified Event",
+     *   summary="Update person_id of current user by course_id",
      *
-     *  @OA\Parameter(
-     *      name="id",
+     *   @OA\Parameter(
+     *      name="course_id",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
-     *           type="integer"
+     *           type="string"
      *      )
      *   ),
-     *
      *   @OA\RequestBody(
      *      required=true,
      *      @OA\JsonContent(
-     *         required={"name","description","date"},
-     *         @OA\Property(property="name", type="string", format="string", example="event-1"),
-     *         @OA\Property(property="description", type="string", format="string", example="description-1"),
-     *         @OA\Property(property="date", type="string", format="date", example="2021-04-30"),
-     *         @OA\Property(property="number_of_attendees", type="integer", format="string"),
-     *         @OA\Property(property="unit_of_attendees", type="string", format="string"),
-     *         @OA\Property(property="dimension", type="string", format="string"),
-     *         @OA\Property(property="type", type="string", format="string"),
-     *         @OA\Property(property="whether_virtual", type="boolean", format="boolean"),
-     *         @OA\Property(property="languages", type="string", format="string"),
-     *         @OA\Property(property="is_internal", type="string", format="string"),
-     *         @OA\Property(property="any_partners", type="string", format="string"),
-     *         @OA\Property(property="component_covid19", type="string", format="string"),
-     *         @OA\Property(property="component_addressing", type="string", format="string"),
-     *         @OA\Property(property="leadership_level", type="string", format="string"),
-     *         @OA\Property(property="resources", type="string", format="string"),
-     *         @OA\Property(property="optional_1", type="string", format="string"),
-     *         @OA\Property(property="optional_2", type="string", format="string"),
-     *         @OA\Property(property="optional_3", type="string", format="string"),
+     *         required={"person_id","course_id"},
+     *         @OA\Property(property="person_id", type="string", format="string", example="person-1"),
      *      ),
      *   ),
      *
@@ -171,128 +186,59 @@ class EventController extends Controller
      *   )
      *)
      **/
-    public function update(Request $request, $id)
+    public function update(Request $request, $course_id)
     {
-        if (Gate::denies('is_owner', Event::find($id))) {
-            return response()->json([
-                'message' => 'This action is not authorized',
-            ], 403);
-        }
-
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'date' => 'required',
+            'person_id' => 'required|string',
         ]);
-
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        Event::where('id', $id)->update($request->all());
+        $event = Event::where('user_id', $request->user()->id)
+                    ->where('course_id', $course_id);
+        if ($event->count() < 1) {
+            return response()->json([
+                'message' => 'PersonID is not existing',
+            ]);            
+        }
+        $event->update($request->all());
+        // Event::where('id', $id)->update($request->all());
 
         return response()->json([
-            'message' => 'Event successfully updated',
+            'message' => 'PersonID successfully updated',
         ]);
     }
 
     /**
      * @OA\Delete(
-     *     path="/events/{id}",
+     *     path="/courses/{course_id}",
+     *     tags={"Course"},
      *     security={{"bearer":{}}},
-     *     tags={"Event"},
-     *     summary="Delete specified event",
+     *     summary="Delete specified person_id",
      *     @OA\Parameter(
-     *        name="id",
-     *        in="path",
-     *        required=true,
-     *        @OA\Schema(
-     *             type="string"
-     *        )
+     *          name="course_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *     ),
      *     @OA\Response(response="200", description="Deleted specified event")
      * )
      */
-    public function destroy($id)
+    public function destroy(Request $request, $course_id)
     {
-        if (Gate::denies('is_owner', Event::find($id))) {
+        $deleted = Event::where('user_id', $request->user()->id)
+                     ->where('course_id', $course_id);
+        if ($deleted->count() < 1) {
             return response()->json([
-                'message' => 'This action is not authorized',
-            ], 403);
+                'message' => 'PersonID is not existing',
+            ]);            
         }
-        $deleted = Event::where('id', $id)->delete();
+        $deleted->delete();
         return response()->json([
-            'message' => 'Event successfully deleted',
+            'message' => 'PersonID successfully deleted',
         ]);
-    }
-
-    /**
-     * @OA\Post(
-     **  path="/events/import-csv",
-     *   security={{"bearer":{}}},
-     *   tags={"Event"},
-     *   summary="Import events using CSV file",
-     *
-     *  @OA\RequestBody(
-     *      required=true,
-     *      @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     description="file to upload",
-     *                     property="events_csv",
-     *                     type="file",
-     *                ),
-     *                 required={"events_csv"}
-     *             )
-     *         )
-     *   ),
-     *   @OA\Response(
-     *      response=200,
-     *      description="Success",
-     *      @OA\MediaType(
-     *           mediaType="application/json",
-     *      )
-     *   ),
-     *   @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     *   @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *   @OA\Response(
-     *      response=403,
-     *      description="Forbidden"
-     *   )
-     *)
-     **/
-    public function importCsv(Request $request)
-    {
-        if ($request->file('events_csv')) {
-            Excel::import(new EventsImport, $request->file('events_csv'), \Maatwebsite\Excel\Excel::CSV);
-
-            return response()->json([
-                'message' => 'Events successfully added',
-            ]);
-        }
-        return response()->json([
-            'message' => 'File not selected',
-        ], 422);
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/events/export-csv",
-     *     security={{"bearer":{}}},
-     *     tags={"Event"},
-     *     summary="Export events of authenticated user",
-     *     @OA\Response(response="200", description="Success")
-     * )
-     */
-    public function exportCsv(Request $request)
-    {
-        return Excel::download(new EventsExport, 'events-' . date('Y-m-d-H-i-s') . '.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 }

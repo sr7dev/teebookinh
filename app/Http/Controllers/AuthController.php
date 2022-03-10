@@ -91,8 +91,9 @@ class AuthController extends Controller
      *      required=true,
      *      description="Pass user credentials",
      *      @OA\JsonContent(
-     *         required={"name","email","password","password_confirmation"},
-     *         @OA\Property(property="name", type="string", format="string", example="john"),
+     *         required={"first_name","last_name","email","password","password_confirmation"},
+     *         @OA\Property(property="first_name", type="string", format="string", example="john"),
+     *         @OA\Property(property="last_name", type="string", format="string", example="smith"),
      *         @OA\Property(property="email", type="string", format="email", example="user1@mail.com"),
      *         @OA\Property(property="password", type="string", format="password", example="PassWord12345"),
      *         @OA\Property(property="password_confirmation", type="string", format="password", example="PassWord12345"),
@@ -128,13 +129,21 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
+            'first_name' => 'required|string|between:2,100',
+            'last_name' => 'required|string|between:1,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            $errorFirstName = $validator->errors()->get('first_name');
+            $errorLastName = $validator->errors()->get('last_name');
+            $errorEmail = $validator->errors()->get('email');
+            $errorPassword = $validator->errors()->get('password');
+            return response()->json(['error' => $errorFirstName ? $errorFirstName :
+                ($errorLastName ? $errorLastName :
+                ($errorEmail ? $errorEmail :
+                ($errorPassword ? $errorPassword : '')))], 422);
         }
 
         $user = User::create(array_merge(
@@ -167,17 +176,7 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'User successfully signed out']);
     }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh()
-    {
-        return $this->createNewToken(auth()->refresh());
-    }
-
+    
     /**
      * @OA\Get(
      *     path="/auth/user-profile",
@@ -193,6 +192,21 @@ class AuthController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *     path="/auth/refresh",
+     *     security={{"bearer":{}}},
+     *     tags={"Auth"},
+     *     summary="Get the refresh token",
+     *     @OA\Response(response="200", description="Get the refresh token"),
+     * )
+     */
+    public function refresh(Request $request)
+    {
+        return $this->createNewToken($request->bearerToken());
+    }
+
+
+    /**
      * Get the token array structure.
      *
      * @param  string $token
@@ -203,6 +217,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'access_token' => $token,
+            'refresh_token' => auth()->refresh(),
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => auth()->user(),

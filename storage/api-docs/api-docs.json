@@ -1,27 +1,39 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Laravel API Documentation",
+        "title": "Teehive API Documentation",
         "description": "L5 Swagger OpenApi description",
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "http://localhost:8000/api/",
+            "url": "http://localhost:8000/api",
             "description": "API Server"
         }
     ],
     "paths": {
-        "/events": {
+        "/credits": {
             "get": {
                 "tags": [
-                    "Event"
+                    "Credits"
                 ],
-                "summary": "Get list of events",
-                "operationId": "App\\Http\\Controllers\\Api\\EventController::index",
+                "summary": "Get credits of current user",
+                "operationId": "App\\Http\\Controllers\\Api\\CreditController::getCredits",
                 "responses": {
-                    "200": {
-                        "description": "Get list of events"
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     }
                 },
                 "security": [
@@ -29,98 +41,29 @@
                         "bearer": []
                     }
                 ]
-            },
-            "post": {
+            }
+        },
+        "/add-credits": {
+            "put": {
                 "tags": [
-                    "Event"
+                    "Credits"
                 ],
-                "summary": "Create new Event",
-                "operationId": "App\\Http\\Controllers\\Api\\EventController::store",
+                "summary": "Add credits of current user",
+                "operationId": "App\\Http\\Controllers\\Api\\CreditController::addCredits",
                 "requestBody": {
+                    "description": "Pass number of credits",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
-                                    "description",
-                                    "date"
+                                    "credits"
                                 ],
                                 "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "event-1"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "description-1"
-                                    },
-                                    "date": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2021-04-30"
-                                    },
-                                    "number_of_attendees": {
+                                    "credits": {
                                         "type": "integer",
-                                        "format": "string"
-                                    },
-                                    "unit_of_attendees": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "dimension": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "type": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "whether_virtual": {
-                                        "type": "boolean",
-                                        "format": "boolean"
-                                    },
-                                    "languages": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "is_internal": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "any_partners": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "component_covid19": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "component_addressing": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "leadership_level": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "resources": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "optional_1": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "optional_2": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "optional_3": {
-                                        "type": "string",
-                                        "format": "string"
+                                        "format": "integer",
+                                        "example": 5
                                     }
                                 },
                                 "type": "object"
@@ -152,20 +95,185 @@
                 ]
             }
         },
-        "/events/{id}": {
+        "/deduct-credits": {
             "put": {
                 "tags": [
-                    "Event"
+                    "Credits"
                 ],
-                "summary": "Update a specified Event",
-                "operationId": "App\\Http\\Controllers\\Api\\EventController::update",
+                "summary": "Deduct credits of current user",
+                "operationId": "App\\Http\\Controllers\\Api\\CreditController::deductCredits",
+                "requestBody": {
+                    "description": "Pass number of credits",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "credits"
+                                ],
+                                "properties": {
+                                    "credits": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/courses": {
+            "get": {
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get list of courses",
+                "operationId": "App\\Http\\Controllers\\Api\\EventController::index",
+                "responses": {
+                    "200": {
+                        "description": "Get list of courses"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Create a new",
+                "operationId": "App\\Http\\Controllers\\Api\\EventController::store",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "person_id",
+                                    "course_id"
+                                ],
+                                "properties": {
+                                    "person_id": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "person-1"
+                                    },
+                                    "course_id": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "course-1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/courses/{course_id}": {
+            "get": {
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get person_id of current user by course_id",
+                "operationId": "App\\Http\\Controllers\\Api\\EventController::getPersonID",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "course_id",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Update person_id of current user by course_id",
+                "operationId": "App\\Http\\Controllers\\Api\\EventController::update",
+                "parameters": [
+                    {
+                        "name": "course_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -175,85 +283,14 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
-                                    "description",
-                                    "date"
+                                    "person_id",
+                                    "course_id"
                                 ],
                                 "properties": {
-                                    "name": {
+                                    "person_id": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "event-1"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "description-1"
-                                    },
-                                    "date": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2021-04-30"
-                                    },
-                                    "number_of_attendees": {
-                                        "type": "integer",
-                                        "format": "string"
-                                    },
-                                    "unit_of_attendees": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "dimension": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "type": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "whether_virtual": {
-                                        "type": "boolean",
-                                        "format": "boolean"
-                                    },
-                                    "languages": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "is_internal": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "any_partners": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "component_covid19": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "component_addressing": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "leadership_level": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "resources": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "optional_1": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "optional_2": {
-                                        "type": "string",
-                                        "format": "string"
-                                    },
-                                    "optional_3": {
-                                        "type": "string",
-                                        "format": "string"
+                                        "example": "person-1"
                                     }
                                 },
                                 "type": "object"
@@ -286,13 +323,13 @@
             },
             "delete": {
                 "tags": [
-                    "Event"
+                    "Course"
                 ],
-                "summary": "Delete specified event",
+                "summary": "Delete specified person_id",
                 "operationId": "App\\Http\\Controllers\\Api\\EventController::destroy",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "course_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -303,75 +340,6 @@
                 "responses": {
                     "200": {
                         "description": "Deleted specified event"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/events/import-csv": {
-            "post": {
-                "tags": [
-                    "Event"
-                ],
-                "summary": "Import events using CSV file",
-                "operationId": "App\\Http\\Controllers\\Api\\EventController::importCsv",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "events_csv"
-                                ],
-                                "properties": {
-                                    "events_csv": {
-                                        "description": "file to upload",
-                                        "type": "file"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "404": {
-                        "description": "not found"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/events/export-csv": {
-            "get": {
-                "tags": [
-                    "Event"
-                ],
-                "summary": "Export events of authenticated user",
-                "operationId": "App\\Http\\Controllers\\Api\\EventController::exportCsv",
-                "responses": {
-                    "200": {
-                        "description": "Success"
                     }
                 },
                 "security": [
@@ -411,16 +379,22 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
+                                    "first_name",
+                                    "last_name",
                                     "email",
                                     "password",
                                     "password_confirmation"
                                 ],
                                 "properties": {
-                                    "name": {
+                                    "first_name": {
                                         "type": "string",
                                         "format": "string",
                                         "example": "john"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "smith"
                                     },
                                     "email": {
                                         "type": "string",
@@ -495,16 +469,22 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
+                                    "first_name",
+                                    "last_name",
                                     "email",
                                     "password",
                                     "password_confirmation"
                                 ],
                                 "properties": {
-                                    "name": {
+                                    "first_name": {
                                         "type": "string",
                                         "format": "string",
                                         "example": "john"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "smith"
                                     },
                                     "email": {
                                         "type": "string",
@@ -650,16 +630,22 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
+                                    "first_name",
+                                    "last_name",
                                     "email",
                                     "password",
                                     "password_confirmation"
                                 ],
                                 "properties": {
-                                    "name": {
+                                    "first_name": {
                                         "type": "string",
                                         "format": "string",
                                         "example": "john"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "smith"
                                     },
                                     "email": {
                                         "type": "string",
@@ -697,6 +683,9 @@
                     },
                     "403": {
                         "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "validation errors"
                     }
                 }
             }
@@ -750,8 +739,12 @@
             "description": "API Endpoints for User"
         },
         {
-            "name": "Event",
-            "description": "API Endpoints for Event"
+            "name": "Credits",
+            "description": "API Endpoints for Credits"
+        },
+        {
+            "name": "Course",
+            "description": "API Endpoints for Course"
         }
     ],
     "components": {

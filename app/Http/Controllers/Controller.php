@@ -12,7 +12,7 @@ class Controller extends BaseController
     /**
      * @OA\Info(
      *      version="1.0.0",
-     *      title="Laravel API Documentation",
+     *      title="Teehive API Documentation",
      *      description="L5 Swagger OpenApi description",
      * )
      *
@@ -27,12 +27,20 @@ class Controller extends BaseController
      *     description="API Endpoints for Authentication"
      * )
      * @OA\Tag(
+     *     name="Social Auth",
+     *     description="API Endpoints for Social Authentication"
+     * )
+     * @OA\Tag(
      *     name="User",
      *     description="API Endpoints for User"
      * )
      * @OA\Tag(
-     *     name="Event",
-     *     description="API Endpoints for Event"
+     *     name="Credits",
+     *     description="API Endpoints for Credits"
+     * )
+     * @OA\Tag(
+     *     name="Course",
+     *     description="API Endpoints for Course"
      * )
      *
      * @OAS\SecurityScheme(

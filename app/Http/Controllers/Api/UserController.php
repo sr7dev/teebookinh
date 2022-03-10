@@ -39,8 +39,9 @@ class UserController extends Controller
      *  @OA\RequestBody(
      *      required=true,
      *      @OA\JsonContent(
-     *         required={"name","email","password","password_confirmation"},
-     *         @OA\Property(property="name", type="string", format="string", example="john"),
+     *         required={"first_name", "last_name","email","password","password_confirmation"},
+     *         @OA\Property(property="first_name", type="string", format="string", example="john"),
+     *         @OA\Property(property="last_name", type="string", format="string", example="smith"),
      *         @OA\Property(property="email", type="string", format="email", example="user1@mail.com"),
      *         @OA\Property(property="is_admin", type="integer", format="integer", example=0),
      *         @OA\Property(property="password", type="string", format="password", example="PassWord12345"),
@@ -71,7 +72,8 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
+            'first_name' => 'required|string|between:2,100',
+            'last_name' => 'required|string|between:1,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
             'is_admin' => 'required|integer',
@@ -113,8 +115,9 @@ class UserController extends Controller
      *  @OA\RequestBody(
      *      required=true,
      *      @OA\JsonContent(
-     *         required={"name","email","password","password_confirmation"},
-     *         @OA\Property(property="name", type="string", format="string", example="john"),
+     *         required={"first_name","last_name","email","password","password_confirmation"},
+     *         @OA\Property(property="first_name", type="string", format="string", example="john"),
+     *         @OA\Property(property="last_name", type="string", format="string", example="smith"),
      *         @OA\Property(property="email", type="string", format="email", example="user1@mail.com"),
      *         @OA\Property(property="is_admin", type="integer", format="integer", example=0),
      *         @OA\Property(property="password", type="string", format="password", example="PassWord12345"),
@@ -151,7 +154,8 @@ class UserController extends Controller
             ], 403);
         }
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
+            'first_name' => 'required|string|between:2,100',
+            'last_name' => 'required|string|between:1,100',
             'email' => 'required|string|email|max:100|unique:users,email,' . $id,
             'password' => 'required|string|confirmed|min:6',
         ]);
@@ -161,7 +165,8 @@ class UserController extends Controller
         }
 
         User::where('id', $id)->update([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'is_admin' => $request->is_admin == null ? 0 : $request->is_admin,
